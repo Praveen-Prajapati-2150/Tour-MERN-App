@@ -27,7 +27,9 @@ const CardTour = ({imageFile, description, title, tags, _id, name}) => {
         <div className="top-left">{name}</div>
         {/*<div>{name}</div>*/}
         <span className={"text-start tag-card"}>
-          {tags?.map((item) => `#${item}`)}
+          {tags?.map((tag) => (
+            <Link to={`/tours/tag/${tag}`}>#{tag}</Link>
+          ))}
         </span>
         <MDBCardBody>
           <MDBCardTitle className="text-start">{title}</MDBCardTitle>
@@ -36,7 +38,7 @@ const CardTour = ({imageFile, description, title, tags, _id, name}) => {
             <Link to={`/tour/${_id}`}>Read More</Link>
           </MDBCardText>
 
-        <div className="text-start">created by: {name}</div>
+          <div className="text-start">created by: {name}</div>
         </MDBCardBody>
       </MDBCardGroup>
     </MDBCardGroup>

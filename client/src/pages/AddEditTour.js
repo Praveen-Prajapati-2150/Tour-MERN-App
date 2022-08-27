@@ -11,7 +11,7 @@ import FileBase from "react-file-base64";
 import {toast} from "react-toastify";
 import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {createTour} from "../redux/features/tourSlice";
+import {createTour, updateTour} from "../redux/features/tourSlice";
 
 const initialState = {
   title: "",
@@ -23,13 +23,21 @@ const AddEditTour = () => {
   const [tourData, setTourData] = useState(initialState);
   const [tagErrMsg, setTagErrMsg] = useState(null);
 
-  const {error, loading} = useSelector((state) => ({...state.tour}))
+  const {error, loading, userTours} = useSelector((state) => ({...state.tour}))
   const {user} = useSelector((state) => ({...state.auth}))
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const {title, description, tags} = tourData;
+  const {id} = useParams()
+
+  useEffect(() => {
+    if (id) {
+      const singleTour = userTours.find((tour) => tour._id === id)
+      setTourData({...singleTour})
+    }
+  }, [id])
 
   useEffect(() => {
     error && toast.error(error)
@@ -38,14 +46,18 @@ const AddEditTour = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (!tags.length) {
+      setTagErrMsg("Please provide some tags ")
+    }
     if (title && description && tags) {
       const updatedTourData = {...tourData, name: user?.result?.name}
       // console.log(updatedTourData)
-      dispatch(createTour({
-        updatedTourData,
-        navigate,
-        toast
-      }))
+      if (!id) {
+        dispatch(createTour({updatedTourData, navigate, toast}))
+      } else {
+        dispatch(updateTour({id, updatedTourData, toast, navigate}))
+      }
+
       handleClear()
     }
   }
@@ -56,6 +68,7 @@ const AddEditTour = () => {
   }
 
   const handleAddTag = (tag) => {
+    setTagErrMsg(null)
     setTourData({...tourData, tags: [...tourData.tags, tag]})
   }
 
@@ -82,7 +95,7 @@ const AddEditTour = () => {
       className="container"
     >
       <MDBCard alignment="center">
-        {/*<h5>{id ? "Update Tour" : "Add Tour"}</h5>*/}
+        <h5 className="pt-3">{id ? "Update Tour" : "Add Tour"}</h5>
         <MDBCardBody>
           <MDBValidation
             onSubmit={handleSubmit}
@@ -91,12 +104,12 @@ const AddEditTour = () => {
               <MDBInput
                 placeholder="Enter Title"
                 type="text"
-                value={title}
+                value={title || ""}
                 name="title"
                 onChange={onInputChange}
                 className="form-control"
                 required
-                invalid
+                invalid={"true"}
                 validation="Please provide title"
               />
             </div>
@@ -109,8 +122,8 @@ const AddEditTour = () => {
                 onChange={onInputChange}
                 className="form-control"
                 required
-                invalid
-                textarea
+                invalid={"true"}
+                textarea={"true"}
                 rows={4}
                 validation="Please provide description"
               />
@@ -125,7 +138,7 @@ const AddEditTour = () => {
                 onAdd={(tag) => handleAddTag(tag)}
                 onDelete={(tag) => handleDeleteTag(tag)}
               />
-              {/*{tagErrMsg && <div className="tagErrMsg">{tagErrMsg}</div>}*/}
+              {tagErrMsg && <div className="tagErrMsg">{tagErrMsg}</div>}
             </div>
             <div className="d-flex justify-content-start">
               <FileBase
@@ -138,8 +151,8 @@ const AddEditTour = () => {
             </div>
             <div className="col-12">
               <MDBBtn style={{width: "100%"}}>
-                {/*{id ? "Update" : "Submit"}*/}
-                Submit
+                {id ? "Update" : "Submit"}
+                {/*Submit*/}
               </MDBBtn>
               <MDBBtn
                 style={{width: "100%"}}

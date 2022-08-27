@@ -10,20 +10,34 @@ import {
   MDBCollapse,
   MDBNavbarBrand,
 } from "mdb-react-ui-kit";
-// import "../index.css"
 import {useDispatch, useSelector} from "react-redux";
 import {setLogout} from "../redux/features/authSlice";
+import {searchTours} from "../redux/features/tourSlice";
+import {useNavigate} from "react-router-dom";
 
 const Header = () => {
   const [show, setShow] = useState(false);
   const [search, setSearch] = useState("");
 
-  const {user} = useSelector((state) => ({...state.auth}))
+  const navigate = useNavigate()
   const dispatch = useDispatch()
+
+  const {user} = useSelector((state) => ({...state.auth}))
 
   const handleLogout = () => {
     dispatch(setLogout())
   }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (search) {
+      dispatch(searchTours(search));
+      navigate(`/tours/search?searchQuery=${search}`);
+      setSearch("")
+    } else {
+      navigate("/")
+    }
+  };
 
   return (
     <MDBNavbar fixed="top" expand="lg" style={{backgroundColor: "#f0e6ea"}}>
@@ -87,7 +101,7 @@ const Header = () => {
             )}
           </MDBNavbarNav>
           <form className="d-flex input-group w-auto"
-            // onSubmit={handleSubmit}
+                onSubmit={handleSubmit}
           >
             <input
               type="text"
