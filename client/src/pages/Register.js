@@ -54,14 +54,14 @@ const Register = () => {
   // const devEnv = process.env.NODE_ENV !== "production";
 
 
-  const googleSuccess = (resp) => {
-    const email = resp?.profileObj?.email;
-    const name = resp?.profileObj?.name;
-    const token = resp?.tokenId;
-    const googleId = resp?.googleId;
-    const result = {email, name, token, googleId};
-    // dispatch(googleSignIn({ result, navigate, toast }));
-  };
+  // const googleSuccess = (resp) => {
+  //   const email = resp?.profileObj?.email;
+  //   const name = resp?.profileObj?.name;
+  //   const token = resp?.tokenId;
+  //   const googleId = resp?.googleId;
+  //   const result = {email, name, token, googleId};
+  //   // dispatch(googleSignIn({ result, navigate, toast }));
+  // };
   const googleFailure = (error) => {
     toast.error(error);
   };
@@ -170,7 +170,7 @@ const Register = () => {
                 <MDBIcon className="me-2" fab icon="google"/> Google Sign In
               </MDBBtn>
             )}
-            onSuccess={googleSuccess}
+            // onSuccess={googleSuccess}
             onFailure={googleFailure}
             cookiePolicy="single_host_origin"
           />

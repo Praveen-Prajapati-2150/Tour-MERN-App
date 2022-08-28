@@ -14,15 +14,26 @@ import {useDispatch, useSelector} from "react-redux";
 import {setLogout} from "../redux/features/authSlice";
 import {searchTours} from "../redux/features/tourSlice";
 import {useNavigate} from "react-router-dom";
+import decode from "jwt-decode"
 
 const Header = () => {
   const [show, setShow] = useState(false);
   const [search, setSearch] = useState("");
 
+  const {user} = useSelector((state) => ({...state.auth}))
+
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const {user} = useSelector((state) => ({...state.auth}))
+  const token = user?.token;
+
+  // have to learn more about decoded token
+  if (token) {
+    const decodedToken = decode(token);
+    if (decodedToken.exp * 1000 < new Date().getTime()) {
+      dispatch(setLogout());
+    }
+  }
 
   const handleLogout = () => {
     dispatch(setLogout())

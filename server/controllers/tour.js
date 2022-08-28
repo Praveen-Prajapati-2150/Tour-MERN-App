@@ -19,9 +19,21 @@ export const createTour = async (req, res) => {
 }
 
 export const getTours = async (req, res) => {
+  const {page} = req.query;
   try {
-    const tours = await TourModel.find()
-    res.status(200).json(tours)
+    // const tours = await TourModel.find()
+    // res.status(200).json(tours)
+
+    const limit = 6;
+    const startIndex = (Number(page) - 1) * limit;
+    const total = await TourModel.countDocuments({})
+    const tours = await TourModel.find().limit(limit).skip(startIndex);
+    res.json({
+      data: tours,
+      currentPage: Number(page),
+      totalTours: total,
+      numberOfPages: Math.ceil(total / limit)
+    })
 
   } catch (err) {
     res.status(404).json({message: "Something went wrong"})
@@ -106,6 +118,47 @@ export const getTourByTag = async (req, res) => {
     res.status(404).json({message: "Something went wrong"})
   }
 }
+
+export const getRelatedTours = async (req, res) => {
+  const tags = req.body;
+  try {
+    const tours = await TourModel.find({tags: {$in: tags}})
+    res.json(tours)
+  } catch (err) {
+    res.status(404).json({message: "Something went wrong"})
+  }
+}
+
+export const likeTour = async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    if (!req.userId) {
+      return res.json({message: "User is not authenticated"})
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({message: `No tour exist with id: ${id}`})
+    }
+
+    const tour = await TourModel.findById(id);
+
+    const index = tour.likes.findIndex((id) => id === String(req.userId))
+
+    if (index === -1) {
+      tour.likes.push(req.userId)
+    } else {
+      tour.likes = tour.likes.filter((id) => id !== String(req.userId))
+    }
+
+    const updatedTour = await TourModel.findByIdAndUpdate(id, tour, {new: true});
+    res.status(200).json(updatedTour)
+
+  } catch (err) {
+    res.status(404).json({message: err.message})
+  }
+}
+
 
 
 
