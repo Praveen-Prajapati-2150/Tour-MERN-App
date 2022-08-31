@@ -5,7 +5,6 @@ export const login = createAsyncThunk("auth/login",
   async ({formValue, navigate, toast}, {rejectWithValue}) => {
     try {
       const response = await api.signIn(formValue)
-      // console.log("response", response)
       toast.success("Login Successfully")
       navigate("/")
       return response.data;
@@ -18,7 +17,6 @@ export const register = createAsyncThunk("auth/register",
   async ({formValue, navigate, toast}, {rejectWithValue}) => {
     try {
       const response = await api.signUp(formValue)
-      // console.log("response", response)
       toast.success("Register Successfully")
       navigate("/")
       return response.data;

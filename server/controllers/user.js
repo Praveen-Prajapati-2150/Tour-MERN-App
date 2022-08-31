@@ -7,7 +7,7 @@ const secret = "test";
 
 export const signin = async (req, res) => {
   const {email, password} = req.body;
-  console.log({email}, {password})
+  // console.log({email}, {password}),
 
   try {
     const oldUser = await UserModel.findOne({email});
@@ -24,7 +24,7 @@ export const signin = async (req, res) => {
 
   } catch (err) {
     res.status(500).json({message: "Something went wrong"})
-    console.log(error)
+    console.log(err)
   }
 }
 
@@ -58,7 +58,6 @@ export const signup = async (req, res) => {
     )
 
     res.status(201).json({result, token})
-
 
   } catch (err) {
     res.status(500).json({message: "Something went wrong"})
